@@ -30,7 +30,7 @@ pipeline {
                withCredentials([usernamePassword(credentialsId: 'docker_cred', passwordVariable: 'paswd', usernameVariable: 'username')]) {
     // some block
 }
-               sh  'echo "$pswd" | docker login -u $username --password-stdin'
+               sh  'echo "$paswd" | docker login -u $username --password-stdin'
             }
         }
 
