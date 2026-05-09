@@ -1,39 +1,39 @@
 pipeline {
     agent any
-
+    
     environment {
-        IMAGE_NAME = "dayanandpy/pyapp"
+        IMAGE_NAME = "patilkeerti/jenkinspyapp"
         ID = "$BUILD_ID"
-        
     }
+        
 
     stages {
-        stage('git checkout') {
+        stage('git pull') {
             steps {
-                git credentialsId: 'github-cred', url: 'https://github.com/dayanandagowda222/pyapp.git'
+                git 'https://github.com/keerti-p/pyapp.git'
             }
         }
-        stage('test and install') {
+        stage('install and test') {
             steps {
-                sh 'pip install -r requirements.txt'
-                sh 'python3 -m pytest'
+               sh '''pip install -r requirements.txt'''
+               sh '''python3 -m pytest'''
             }
         }
-        stage('build image') {
+        stage('docker image') {
             steps {
-                sh 'docker build -t $IMAGE_NAME:$ID .'
-                sh 'docker tag $IMAGE_NAME:$ID $IMAGE_NAME:latest'
-                
+               sh 'docker build -t $IMAGE_NAME:$ID .'
+               sh 'docker tag $IMAGE_NAME:$ID $IMAGE_NAME:latest'
             }
         }
         stage('docker login') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'docker-cred', passwordVariable: 'pswd', usernameVariable: 'username')]) {
-                    sh  'echo "$pswd" | docker login -u $username --password-stdin'
-                }
+               withCredentials([usernamePassword(credentialsId: 'docker_cred', passwordVariable: 'paswd', usernameVariable: 'username')]) {
+    // some block
+}
+               sh  'echo "$pswd" | docker login -u $username --password-stdin'
             }
         }
-        
+
         stage('push image') {
             steps {
                 sh 'docker push $IMAGE_NAME:$ID'
@@ -46,48 +46,5 @@ pipeline {
                 sh 'docker compose up -d --build'
             }
         }
-        
     }
-
-    post {
-        success {
-            mail bcc: '', 
-                 body: """Hi Team,
-
-            Job Name: ${env.JOB_NAME}
-            Build Number: ${env.BUILD_NUMBER}
-            Status: SUCCESS
-            Branch: ${env.GIT_BRANCH}
-            Commit: ${env.GIT_COMMIT}
-            
-            Logs: ${env.BUILD_URL}console
-            
-            Regards,
-            Jenkins
-            """, 
-             cc: '', from: '', replyTo: '', 
-             subject: "[Jenkins] ${env.JOB_NAME} #${env.BUILD_NUMBER} - Success", 
-             to: 'dayanandgowda.ty@gmail.com'
-        }
-        failure {
-            mail bcc: '', 
-                 body: """Hi Team,
-
-                Job Name: ${env.JOB_NAME}
-                Build Number: ${env.BUILD_NUMBER}
-                Status: FAILED
-                Branch: ${env.GIT_BRANCH}
-                Commit: ${env.GIT_COMMIT}
-                
-                Logs: ${env.BUILD_URL}console
-                
-                Regards,
-                Jenkins
-                """, 
-                 cc: '', from: '', replyTo: '', 
-                 subject: "[Jenkins] ${env.JOB_NAME} #${env.BUILD_NUMBER} - Failed", 
-                 to: 'dayanandgowda.ty@gmail.com'
-        }
     }
-}
-
