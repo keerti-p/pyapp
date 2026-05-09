@@ -56,44 +56,54 @@ pipeline {
                 sh 'docker compose up -d --build'
             }
         }
+    }
+
     post {
+
         success {
-            mail bcc: '', 
+
+            mail bcc: '',
                  body: """Hi Team,
 
-            Job Name: ${env.JOB_NAME}
-            Build Number: ${env.BUILD_NUMBER}
-            Status: SUCCESS
-            Branch: ${env.GIT_BRANCH}
-            Commit: ${env.GIT_COMMIT}
-            
-            Logs: ${env.BUILD_URL}console
-            
-            Regards,
-            Jenkins
-            """, 
-             cc: '', from: '', replyTo: '', 
-             subject: "[Jenkins] ${env.JOB_NAME} #${env.BUILD_NUMBER} - Success", 
-             to: 'dayanandgowda.ty@gmail.com'
+Job Name: ${env.JOB_NAME}
+Build Number: ${env.BUILD_NUMBER}
+Status: SUCCESS
+Branch: ${env.GIT_BRANCH}
+Commit: ${env.GIT_COMMIT}
+
+Logs: ${env.BUILD_URL}console
+
+Regards,
+Jenkins
+""",
+                 cc: '',
+                 from: '',
+                 replyTo: '',
+                 subject: "[Jenkins] ${env.JOB_NAME} #${env.BUILD_NUMBER} - Success",
+                 to: 'keertipatil012@gmail.com'
         }
-    failure {
-            mail bcc: '', 
+
+        failure {
+
+            mail bcc: '',
                  body: """Hi Team,
 
-                Job Name: ${env.JOB_NAME}
-                Build Number: ${env.BUILD_NUMBER}
-                Status: FAILED
-                Branch: ${env.GIT_BRANCH}
-                Commit: ${env.GIT_COMMIT}
-                
-                Logs: ${env.BUILD_URL}console
-                
-                Regards,
-                Jenkins
-                """, 
-                 cc: '', from: '', replyTo: '', 
-                 subject: "[Jenkins] ${env.JOB_NAME} #${env.BUILD_NUMBER} - Failed", 
-                 to: 'dayanandgowda.ty@gmail.com'
+Job Name: ${env.JOB_NAME}
+Build Number: ${env.BUILD_NUMBER}
+Status: FAILED
+Branch: ${env.GIT_BRANCH}
+Commit: ${env.GIT_COMMIT}
+
+Logs: ${env.BUILD_URL}console
+
+Regards,
+Jenkins
+""",
+                 cc: '',
+                 from: '',
+                 replyTo: '',
+                 subject: "[Jenkins] ${env.JOB_NAME} #${env.BUILD_NUMBER} - Failed",
+                 to: 'keertipatil012@gmail.com'
         }
     }
 }
