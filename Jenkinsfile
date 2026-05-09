@@ -1,36 +1,46 @@
 pipeline {
     agent any
-    
+
     environment {
         IMAGE_NAME = "patilkeerti/jenkinspyapp"
         ID = "$BUILD_ID"
     }
-        
 
     stages {
+
         stage('git pull') {
             steps {
                 git 'https://github.com/keerti-p/pyapp.git'
             }
         }
+
         stage('install and test') {
             steps {
-               sh '''pip install -r requirements.txt'''
-               sh '''python3 -m pytest'''
+                sh 'pip install -r requirements.txt'
+                sh 'python3 -m pytest'
             }
         }
+
         stage('docker image') {
             steps {
-               sh 'docker build -t $IMAGE_NAME:$ID .'
-               sh 'docker tag $IMAGE_NAME:$ID $IMAGE_NAME:latest'
+                sh 'docker build -t $IMAGE_NAME:$ID .'
+                sh 'docker tag $IMAGE_NAME:$ID $IMAGE_NAME:latest'
             }
         }
+
         stage('docker login') {
             steps {
-               withCredentials([usernamePassword(credentialsId: 'docker_cred', passwordVariable: 'paswd', usernameVariable: 'username')]) {
-    // some block
-}
-               sh  'echo "$paswd" | docker login -u $username --password-stdin'
+
+                withCredentials([
+                    usernamePassword(
+                        credentialsId: 'docker_cred',
+                        usernameVariable: 'username',
+                        passwordVariable: 'paswd'
+                    )
+                ]) {
+
+                    sh 'echo "$paswd" | docker login -u "$username" --password-stdin'
+                }
             }
         }
 
@@ -47,4 +57,4 @@ pipeline {
             }
         }
     }
-    }
+}
