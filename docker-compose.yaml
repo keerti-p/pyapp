@@ -1,6 +1,6 @@
 services:
   web:
-    image: dayanandpy/pyapp:latest
+    image: patilkeerti/jenkinspyapp:latest
     ports:
       - "80:5000"
   
